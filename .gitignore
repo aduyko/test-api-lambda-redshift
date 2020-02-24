@@ -1,0 +1,7 @@
+*.swp
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+aws-serverless-workshops-master/
+aws-serverless-workshops-master.zip
+
