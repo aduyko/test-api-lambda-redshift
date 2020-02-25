@@ -18,7 +18,7 @@ resource "aws_s3_bucket_object" "website_html" {
   for_each    = fileset("${path.module}/${var.s3_files_path}", "*.html")
 
   bucket      = var.s3_bucket_name
-  key         = each.value 
+  key         = each.value
   source      = "${path.module}/${var.s3_files_path}/${each.value}"
   content_type= "text/html"
 
@@ -63,7 +63,7 @@ resource "aws_s3_bucket_object" "website_icon" {
   for_each    = fileset("${path.module}/${var.s3_files_path}", "*.ico")
 
   bucket      = var.s3_bucket_name
-  key         = each.value 
+  key         = each.value
   source      = "${path.module}/${var.s3_files_path}/${each.value}"
   content_type= "image/x-icon"
 

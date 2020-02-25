@@ -18,6 +18,11 @@ variable "s3_bucket_name" {
   default = "aduyko-serverless-test"
 }
 
+variable "redshift_secret_name" {
+  type    = string
+  default = "test/serverless/redshift_credentials"
+}
+
 variable "s3_files_path" {
   type    = string
   default = "dist/s3/website"
