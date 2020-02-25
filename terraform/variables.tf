@@ -22,3 +22,8 @@ variable "s3_files_path" {
   type    = string
   default = "dist/s3/website"
 }
+
+variable "templates_path" {
+  type    = string
+  default = "templates"
+}

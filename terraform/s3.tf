@@ -1,19 +1,9 @@
 resource "aws_s3_bucket" "bucket" {
   bucket = var.s3_bucket_name
   acl    = "public-read"
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::${var.s3_bucket_name}/*"
-        }
-    ]
-}
-EOF
+  policy = templatefile("${path.module}/${var.templates_path}/s3_policy.json.tmpl", {
+    bucket_name = var.s3_bucket_name,
+  })
 
   website {
     index_document = "index.html"
@@ -43,7 +33,8 @@ resource "aws_s3_bucket_object" "website_js" {
   source      = "${path.module}/${var.s3_files_path}/js/${each.value}"
   content_type= "text/javascript"
 
-  depends_on  = [aws_s3_bucket.bucket]
+  # Generate our configs before uploading
+  depends_on  = [aws_s3_bucket.bucket, local_file.config]
 }
 
 resource "aws_s3_bucket_object" "website_css" {
