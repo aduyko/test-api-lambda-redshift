@@ -8,6 +8,20 @@ variable "vpc_cidr" {
   default = "172.30.0.0/16"
 }
 
+variable "vpc_subnets_redshift" {
+  type    = map
+  default = {
+    "us-east-1a" = "172.30.0.0/24",
+    "us-east-1b" = "172.30.1.0/24",
+    "us-east-1c" = "172.30.2.0/24"
+  }
+}
+
+variable "redshift_subnet_group_name" {
+  type    = string
+  default = "redshift-subnet-group"
+}
+
 variable "tag_app_name" {
   type    = string
   default = "aduyko-serverless-test"
