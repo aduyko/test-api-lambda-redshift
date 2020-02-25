@@ -37,6 +37,11 @@ variable "redshift_secret_name" {
   default = "test/serverless/redshift_credentials"
 }
 
+variable "redshift_port" {
+  type    = string
+  default = "5439"
+}
+
 variable "s3_files_path" {
   type    = string
   default = "dist/s3/website"
