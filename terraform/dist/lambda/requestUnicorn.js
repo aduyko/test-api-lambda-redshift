@@ -13,13 +13,13 @@ const fleet = [
         Id: 2,
         Name: 'Shadowfax',
         Color: 'White',
-        Gender: 'Male',
+        Gender: 'Female',
     },
     {
         Id: 3,
         Name: 'Rocinante',
         Color: 'Yellow',
-        Gender: 'Female',
+        Gender: 'Non-binary',
     },
 ];
 

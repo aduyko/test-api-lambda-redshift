@@ -17,6 +17,15 @@ variable "vpc_subnets_redshift" {
   }
 }
 
+variable "vpc_subnets_lambda" {
+  type    = map
+  default = {
+    "us-east-1a" = "172.30.3.0/24",
+    "us-east-1b" = "172.30.4.0/24",
+    "us-east-1c" = "172.30.5.0/24"
+  }
+}
+
 variable "redshift_subnet_group_name" {
   type    = string
   default = "redshift-subnet-group"
@@ -40,6 +49,11 @@ variable "redshift_secret_name" {
 variable "redshift_port" {
   type    = string
   default = "5439"
+}
+
+variable "redshift_db_name" {
+  type    = string
+  default = "aduyko_serverless_test_db"
 }
 
 variable "s3_files_path" {

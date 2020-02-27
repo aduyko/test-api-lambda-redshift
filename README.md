@@ -8,16 +8,9 @@ That is where the resources are from, such as the s3 website
   - must contain keys "master_username" and "master_password" for creating redshift cluster
 
 ## To Do:
-- Create VPC, Subnets, SGs for redshift
-  - Update redshift tf template to launch using above parameters
-- Create table in redshift
-  - Set up postgres provider (in redshift tf template?)
-  - Create any necessary schema/table/user
-    - rides
-    - (?)unicorns
 - Create subnets, SGs, iam roles for lambda
 - Create lambda
-  - Should be in the VPC with redshift in order to have internal access - ideally redshift wouldnt be open to public?
+  - Should be in the VPC with redshift in order to have internal access
 - Create api gateway
 
 ## Improvements:

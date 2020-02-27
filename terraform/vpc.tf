@@ -35,7 +35,7 @@ resource "aws_subnet" "redshift" {
   vpc_id            = aws_vpc.vpc.id
 
   tags = {
-    Name = "${var.tag_app_name}_${each.key}"
+    Name = "${var.tag_app_name}_redshift_${each.key}"
   }
 }
 
@@ -45,6 +45,19 @@ resource "aws_redshift_subnet_group" "redshift_subnets" {
 
   tags = {
     Name = "${var.tag_app_name}"
+  }
+}
+
+resource "aws_subnet" "lambda" {
+  for_each          = var.vpc_subnets_lambda
+
+  # subnets are in the format {"availability_zone" = "cidr_block"}
+  availability_zone = each.key
+  cidr_block        = each.value
+  vpc_id            = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.tag_app_name}_lambda_${each.key}"
   }
 }
 
@@ -71,6 +84,8 @@ resource "aws_security_group" "redshift" {
     to_port         = var.redshift_port
     protocol        = "tcp"
     security_groups = [aws_security_group.lambda.id]
+    # Office IP
+    # cidr_blocks     = []
   }
 
   egress {

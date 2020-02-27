@@ -1,14 +1,6 @@
-data "aws_secretsmanager_secret" "redshift" {
-  name = var.redshift_secret_name
-}
-
-data "aws_secretsmanager_secret_version" "redshift" {
-  secret_id = data.aws_secretsmanager_secret.redshift.id
-}
-
 resource "aws_redshift_cluster" "cluster" {
   cluster_identifier        = "${var.tag_app_name}-cluster"
-  database_name             = "aduyko_serverless_test_db"
+  database_name             = var.redshift_db_name
   master_username           = jsondecode(data.aws_secretsmanager_secret_version.redshift.secret_string)["master_username"]
   master_password           = jsondecode(data.aws_secretsmanager_secret_version.redshift.secret_string)["master_password"]
   node_type                 = "dc2.large"
@@ -21,14 +13,13 @@ resource "aws_redshift_cluster" "cluster" {
 
   depends_on = [aws_default_route_table.route_table]
 }
-/*
-provider "postgresql" {
-  host            = "postgres_server_ip"
-  port            = 5432
-  database        = "postgres"
-  username        = "postgres_user"
-  password        = "postgres_password"
-  sslmode         = "require"
-  connect_timeout = 15
+
+resource "null_resource" "redshift_db_setup" {
+  depends_on = [aws_redshift_cluster.cluster]
+  provisioner "local-exec" {
+    command = "psql -h ${split(":", aws_redshift_cluster.cluster.endpoint)[0]} -p ${var.redshift_port} -U ${jsondecode(data.aws_secretsmanager_secret_version.redshift.secret_string)["master_username"]} -d ${var.redshift_db_name} -f ${path.module}/dist/redshift/init.sql"
+    environment = {
+      PGPASSWORD = jsondecode(data.aws_secretsmanager_secret_version.redshift.secret_string)["master_password"]
+    }
+  }
 }
-*/
