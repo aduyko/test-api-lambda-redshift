@@ -56,6 +56,31 @@ variable "redshift_db_name" {
   default = "aduyko_serverless_test_db"
 }
 
+variable "redshift_schema_name" {
+  type    = string
+  default = "aduyko_test"
+}
+
+variable "lambda_filename" {
+  type    = string
+  default = "dist/lambda/lambda_function.zip"
+}
+
+variable "lambda_handler" {
+  type    = string
+  default = "requestUnicorn.exports.handler"
+}
+
+variable "lambda_runtime" {
+  type    = string
+  default = "nodejs10.x"
+}
+
+variable "api_gateway_stage_name" {
+  type    = string
+  default = "test"
+}
+
 variable "s3_files_path" {
   type    = string
   default = "dist/s3/website"

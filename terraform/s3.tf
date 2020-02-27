@@ -70,8 +70,15 @@ resource "aws_s3_bucket_object" "website_icon" {
   depends_on  = [aws_s3_bucket.bucket]
 }
 
+# Generate config file for app using cognito and api gateway sources
+resource "local_file" "config" {
+  filename  = "${path.module}/${var.s3_files_path}/js/config.js"
+  content   = templatefile("${path.module}/${var.templates_path}/config.js.tmpl", {
+    user_pool_id        = aws_cognito_user_pool.pool.id,
+    user_pool_client_id = aws_cognito_user_pool_client.client.id,
+    region              = var.aws_region
+    invoke_url          = aws_api_gateway_deployment.deployment.invoke_url
+  })
 
-output "s3_website_url" {
-  value       = aws_s3_bucket.bucket.website_endpoint
-  description = "S3 website URL"
+  depends_on = [aws_cognito_user_pool_client.client, aws_api_gateway_deployment.deployment]
 }
