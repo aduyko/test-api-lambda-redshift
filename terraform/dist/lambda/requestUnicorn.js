@@ -48,7 +48,7 @@ exports.handler = (event, context, callback) => {
     const unicorn = findUnicorn(pickupLocation);
 
     recordRide(rideId, username, unicorn).then(res => {
-        console.log(res.rows[0]);
+        console.log(res);
         // You can use the callback function to provide a return value from your Node.js
         // Lambda functions. The first parameter is used for failed invocations. The
         // second parameter specifies the result data of the invocation.
@@ -56,7 +56,7 @@ exports.handler = (event, context, callback) => {
         // Because this Lambda function is called by an API Gateway proxy integration
         // the result object must use the following structure.
         callback(null, {
-            statusCode: 201,
+            statusCode: 200,
             body: JSON.stringify({
                 RideId: rideId,
                 Unicorn: unicorn,
@@ -126,6 +126,8 @@ function errorResponse(errorMessage, awsRequestId, callback) {
     }),
     headers: {
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+      'Access-Control-Allow-Methods': 'POST'
     },
   });
 }

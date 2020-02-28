@@ -32,7 +32,7 @@ resource "aws_lambda_function" "lambda_function" {
       "PGDATABASE"  = var.redshift_db_name,
       "PGUSER"      = jsondecode(data.aws_secretsmanager_secret_version.redshift.secret_string)["master_username"],
       "PGPASSWORD"  = jsondecode(data.aws_secretsmanager_secret_version.redshift.secret_string)["master_password"]
-      "PGOPTIONS"   = "--search_path=${var.redshift_schema_name}"
+      "PGSCHEMA"    = var.redshift_schema_name
     }
   }
 
