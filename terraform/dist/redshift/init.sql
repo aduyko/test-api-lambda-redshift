@@ -4,7 +4,7 @@ CREATE TABLE aduyko_test.rides (
   id BIGINT IDENTITY NOT NULL PRIMARY KEY,
   username VARCHAR(100) NOT NULL,
   unicorn_id INTEGER NOT NULL,
-  request_time TIMESTAMP DEFAULT NOW()
+  request_time TIMESTAMP DEFAULT GETDATE()
 );
 
 CREATE TABLE aduyko_test.unicorns (

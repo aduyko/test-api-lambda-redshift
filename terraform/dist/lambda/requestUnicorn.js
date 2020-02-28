@@ -87,26 +87,25 @@ function findUnicorn(pickupLocation) {
     return fleet[Math.floor(Math.random() * fleet.length)];
 }
 
-function recordRide(rideId, username, unicorn) {
-    const pgClient = new pg.Client();
+async function recordRide(rideId, username, unicorn) {
+    let pgClient = new pg.Client();
     await pgClient.connect();
+    console.log("Created redshift connection");
 
-    const text = "INSERT INTO rides(username, unicornId) VALUES($1, $2) RETURNING *";
+    const text = `INSERT INTO ${process.env.PGSCHEMA}.rides(username,unicorn_id) VALUES($1,$2);`;
     const values = [username, unicorn.Id];
+    console.log(`Executing query ${text} with values ${values}`);
 
-    return pgClient.query(text,values);
-  /*
-    return ddb.put({
-        TableName: 'Rides',
-        Item: {
-            RideId: rideId,
-            User: username,
-            Unicorn: unicorn,
-            UnicornName: unicorn.Name,
-            RequestTime: new Date().toISOString(),
-        },
-    }).promise();
-  */
+    const query = pgClient
+        .query(text,values)
+        .then(res => {
+          pgClient.end();
+        })
+        .catch(e => {
+          console.error(e.stack);
+        });
+
+    return query;
 }
 
 function toUrlString(buffer) {

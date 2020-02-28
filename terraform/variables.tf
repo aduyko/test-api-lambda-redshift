@@ -68,7 +68,7 @@ variable "lambda_filename" {
 
 variable "lambda_handler" {
   type    = string
-  default = "requestUnicorn.exports.handler"
+  default = "requestUnicorn.handler"
 }
 
 variable "lambda_runtime" {

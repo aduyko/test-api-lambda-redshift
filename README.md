@@ -3,11 +3,14 @@ Sample serverless web application with redshift through terraform
 Generally following along with https://aws.amazon.com/getting-started/projects/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/
 That is where the resources are from, such as the s3 website
 
-## Manual Requirements:
+## Requirements:
+- terraform installed on the command line, available via PATH
+- psql installed on the command line, available via PATH
 - AWS Secrets Manager secret for "redshift_secret_name" in variables.tf
   - must contain keys "master_username" and "master_password" for creating redshift cluster
 
 ## To Do:
+- Update lambda to be a template, zip it to use proper schema(!!!???)
 - Create subnets, SGs, iam roles for lambda
 - Create lambda
   - Should be in the VPC with redshift in order to have internal access
