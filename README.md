@@ -3,6 +3,15 @@ Sample serverless web application with redshift through terraform
 Generally following along with https://aws.amazon.com/getting-started/projects/build-serverless-web-app-lambda-apigateway-s3-dynamodb-cognito/module-1/
 That is where the resources are from, such as the s3 website
 
+## Lambda Functions:
+### requestUnicorn
+- Receives POSTs from API gateway containing Auth information from Cognito and coordinate data from the web app
+- Does some processing to figure out which Unicorn to send
+- Queues the results in SQS, returns the results to the web app through API gateway
+### processQueue
+- Grabs every message in SQS (in configurable batch sizes), creates and uploads a csv to s3 and then loads that into redshift
+- Runs every 5 minutes (configurable)
+
 ## Requirements:
 - terraform installed on the command line, available via PATH
 - psql installed on the command line, available via PATH
@@ -11,19 +20,9 @@ That is where the resources are from, such as the s3 website
 
 ## To Do:
 - Update lambda to be a template, zip it to use proper schema(!!!???)
-- Create subnets, SGs, iam roles for lambda
-- Create lambda
-  - Should be in the VPC with redshift in order to have internal access
-- Create api gateway
-
-## Improvements:
-
-### Lambda:
-- (Maybe) Write to S3 and have redshift load from S3 instead of writing directly to redshift
-
-### Lambda redshift credentials:
+- Have API gateway send requests to sqs or something for batch ingestion
 - can/should? use "AWS.Redshift.getClusterCredentials()" instead of having credentials as lambda function parameters
+- Update lambda function to ingest from sqs in batches, upload to s3 then redshift
 
 ## Questions:
-- None at the moment
-  - Something about temporary files crossed my mind but I can't remember right now. Does terraform have a way for handling temporarily creating files or does it just want you to use something like /tmp/ - ties into templates not being a common use case
+- We no have two lambda functions - what would be the best way to organize this? If there was a lambda module, would this be two separate invocations of that? If it's organized like this without modules, should they be in two separate files? It gets kind of ugly with code kind of repeating in iam.tf and lambda.tf

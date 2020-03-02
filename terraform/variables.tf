@@ -61,14 +61,24 @@ variable "redshift_schema_name" {
   default = "aduyko_test"
 }
 
-variable "lambda_filename" {
+variable "lambda_filename_requestUnicorn" {
   type    = string
-  default = "dist/lambda/lambda_function.zip"
+  default = "dist/lambda/requestUnicorn/lambda_function.zip"
 }
 
-variable "lambda_handler" {
+variable "lambda_filename_processQueue" {
+  type    = string
+  default = "dist/lambda/processQueue/lambda_function.zip"
+}
+
+variable "lambda_handler_requestUnicorn" {
   type    = string
   default = "requestUnicorn.handler"
+}
+
+variable "lambda_handler_processQueue" {
+  type    = string
+  default = "processQueue.handler"
 }
 
 variable "lambda_runtime" {

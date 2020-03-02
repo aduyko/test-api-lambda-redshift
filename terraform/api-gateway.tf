@@ -41,7 +41,7 @@ resource "aws_api_gateway_integration" "lambda" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.lambda_function.invoke_arn
+  uri                     = aws_lambda_function.requestUnicorn.invoke_arn
 }
 
 resource "aws_api_gateway_method" "ride_options" {
