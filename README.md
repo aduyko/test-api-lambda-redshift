@@ -9,21 +9,25 @@ That is where the resources are from, such as the s3 website
 - Does some processing to figure out which Unicorn to send
 - Queues the results in SQS, returns the results to the web app through API gateway
 ### processQueue
-- Grabs every message in SQS (in configurable batch sizes), creates and uploads a csv to s3 and then loads that into redshift
+- Grabs every message in SQS (in configurable batch sizes), creates and uploads a csv to s3
+- Sends a notifaction to SNS to trigger redshiftCopy to load the data into redshift
 - Runs every 5 minutes (configurable)
+### redshiftCopy
+- Loads a file from S3 into redshift
 
 ## Requirements:
 - terraform installed on the command line, available via PATH
 - psql installed on the command line, available via PATH
 - AWS Secrets Manager secret for "redshift_secret_name" in variables.tf
   - must contain keys "master_username" and "master_password" for creating redshift cluster
+- lambda functions under ./terraform/dist/lambda must have node_modules installed and must be zipped up into lambda_function.zip.
+  - Node modules: from the redshiftCopy module directory (where the redshiftCopy.js file is), you can do `npm install pg`
+  - Zip: from the lambda module directories, run `zip -r lambda_function.zip .`
 
 ## To Do:
-- Update lambda to be a template, zip it to use proper schema(!!!???)
-- Have API gateway send requests to sqs or something for batch ingestion
-- can/should? use "AWS.Redshift.getClusterCredentials()" instead of having credentials as lambda function parameters
-- Update lambda function to ingest from sqs in batches, upload to s3 then redshift
+- delete sqs messages after uploading a csv to s3
+- should use "AWS.Redshift.getClusterCredentials()" instead of having credentials as lambda function parameters
 
 ## Questions:
-- We no have two lambda functions - what would be the best way to organize this? If there was a lambda module, would this be two separate invocations of that? If it's organized like this without modules, should they be in two separate files? It gets kind of ugly with code kind of repeating in iam.tf and lambda.tf
+- We now have several lambda functions, each with a unique policy and configurations - what would be the best way to organize this? If there was a lambda module, would this be two separate invocations of that? If it's organized like this without modules, should they be in two separate files? It gets kind of ugly with code kind of repeating in iam.tf and lambda.tf
 - Using sqs as a data source makes it want to update my lambdas every time, because they use the URL from that data source. What is the best way to resolve this?

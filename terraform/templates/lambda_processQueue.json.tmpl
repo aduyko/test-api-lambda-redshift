@@ -13,6 +13,7 @@
     {
       "Action": [
         "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
         "sqs:GetQueueUrl"
       ],
       "Resource": "${sqs_queue_arn}",

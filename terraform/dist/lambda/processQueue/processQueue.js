@@ -43,7 +43,7 @@ exports.handler = async (event, context) => {
               timestamp: time
             }
             res = await notifySNS(message);
-            context.succeed(`Successfully parsed SQS into a CSV and notified SNS`);            
+            console.log("Successfully parsed SQS into a CSV and notified SNS, deleting messages")
         } catch(err) {
             console.error(err);
             context.fail(err);
@@ -51,10 +51,21 @@ exports.handler = async (event, context) => {
     } else {
         context.succeed(`Successful, no messages in queue`);
     }
+
+    for(let i=0;i<allMessages.length;i++) {
+        let message = allMessages[i];
+        let receiptHandle = message.ReceiptHandle;
+        try {
+            let deleted = await deleteMessage(receiptHandle);
+        } catch(err) {
+            console.error(err);
+            context.fail(err);
+        };
+    }
+    context.succeed(`Successfully parsed SQS into a CSV and notified SNS, cleaned up SQS after`);
 };
 
 async function getMessages() {
-    // SQS code here
     const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
     let params = {
         QueueUrl: process.env.SQS_QUEUE_URL,
@@ -64,6 +75,16 @@ async function getMessages() {
     };
     let messages = sqs.receiveMessage(params).promise();
     return messages;
+}
+
+async function deleteMessage(receiptHandle) {
+    const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
+    let params = {
+        QueueUrl: process.env.SQS_QUEUE_URL,
+        ReceiptHandle: receiptHandle
+    };
+    let deleted = sqs.deleteMessage(params).promise();
+    return deleted;
 }
 
 function createCsv(messages) {
