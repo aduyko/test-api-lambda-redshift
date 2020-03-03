@@ -7,6 +7,7 @@ resource "aws_redshift_cluster" "cluster" {
   cluster_type              = "single-node"
   cluster_subnet_group_name = aws_redshift_subnet_group.redshift_subnets.name
   vpc_security_group_ids    = [aws_security_group.redshift.id]
+  iam_roles                 = [aws_iam_role.redshift_s3_read.arn]
 
   #Skip final snapshot for testing purposes
   skip_final_snapshot       = true

@@ -1,6 +1,5 @@
 const randomBytes = require('crypto').randomBytes;
 const AWS = require('aws-sdk');
-const pg  = require('pg');
 
 const fleet = [
     {
@@ -47,8 +46,9 @@ exports.handler = (event, context, callback) => {
 
     const unicorn = findUnicorn(pickupLocation);
 
-    recordRide(rideId, username, unicorn).then(res => {
-        console.log(res);
+    let res = recordRide(rideId, username, unicorn).promise();
+    res.then(function(data) {
+        console.log(data.MessageId);
         // You can use the callback function to provide a return value from your Node.js
         // Lambda functions. The first parameter is used for failed invocations. The
         // second parameter specifies the result data of the invocation.
@@ -79,6 +79,7 @@ exports.handler = (event, context, callback) => {
         // more meaningful error response to the end client.
         errorResponse(err.message, context.awsRequestId, callback)
     });
+
 };
 
 // This is where you would implement logic to find the optimal unicorn for
@@ -89,25 +90,21 @@ function findUnicorn(pickupLocation) {
     return fleet[Math.floor(Math.random() * fleet.length)];
 }
 
-async function recordRide(rideId, username, unicorn) {
-    let pgClient = new pg.Client();
-    await pgClient.connect();
-    console.log("Created redshift connection");
+function recordRide(rideId, username, unicorn) {
+  // SQS code here
+  const sqs = new AWS.SQS({apiVersion: '2012-11-05'});
+  let body = {
+    "username": username,
+    "unicornId": unicorn.Id,
+    "timestamp": Date.now()
+  }
+  let params = {
+    DelaySeconds: 10,
+    MessageBody: JSON.stringify(body),
+    QueueUrl: `${process.env.SQS_QUEUE_URL}`
+  };
 
-    const text = `INSERT INTO ${process.env.PGSCHEMA}.rides(username,unicorn_id) VALUES($1,$2);`;
-    const values = [username, unicorn.Id];
-    console.log(`Executing query ${text} with values ${values}`);
-
-    const query = pgClient
-        .query(text,values)
-        .then(res => {
-          pgClient.end();
-        })
-        .catch(e => {
-          console.error(e.stack);
-        });
-
-    return query;
+  return sqs.sendMessage(params);
 }
 
 function toUrlString(buffer) {
@@ -131,3 +128,4 @@ function errorResponse(errorMessage, awsRequestId, callback) {
     },
   });
 }
+

@@ -3,6 +3,6 @@ output "api_url" {
 }
 
 output "s3_website_url" {
-  value       = aws_s3_bucket.bucket.website_endpoint
+  value       = aws_s3_bucket.www_bucket.website_endpoint
   description = "S3 website URL"
 }

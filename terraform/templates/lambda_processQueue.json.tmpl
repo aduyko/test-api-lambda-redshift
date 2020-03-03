@@ -1,0 +1,36 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:GetQueueUrl"
+      ],
+      "Resource": "${sqs_queue_arn}",
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "${s3_bucket_name}/*",
+      "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "${sns_topic}",
+      "Effect": "Allow"
+    }
+  ]
+}
