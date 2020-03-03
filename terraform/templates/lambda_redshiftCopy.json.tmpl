@@ -12,22 +12,7 @@
     },
     {
       "Action": [
-        "sqs:ReceiveMessage",
-        "sqs:GetQueueUrl"
-      ],
-      "Resource": "${sqs_queue_arn}",
-      "Effect": "Allow"
-    },
-    {
-      "Action": [
-        "s3:PutObject"
-      ],
-      "Resource": "${s3_bucket_name}/*",
-      "Effect": "Allow"
-    },
-    {
-      "Action": [
-        "sns:Publish"
+        "sns:Subscribe"
       ],
       "Resource": "${sns_topic}",
       "Effect": "Allow"

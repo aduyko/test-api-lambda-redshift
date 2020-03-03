@@ -71,6 +71,11 @@ variable "lambda_filename_processQueue" {
   default = "dist/lambda/processQueue/lambda_function.zip"
 }
 
+variable "lambda_filename_redshiftCopy" {
+  type    = string
+  default = "dist/lambda/redshiftCopy/lambda_function.zip"
+}
+
 variable "lambda_handler_requestUnicorn" {
   type    = string
   default = "requestUnicorn.handler"
@@ -79,6 +84,11 @@ variable "lambda_handler_requestUnicorn" {
 variable "lambda_handler_processQueue" {
   type    = string
   default = "processQueue.handler"
+}
+
+variable "lambda_handler_redshiftCopy" {
+  type    = string
+  default = "redshiftCopy.handler"
 }
 
 variable "lambda_runtime" {

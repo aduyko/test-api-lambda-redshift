@@ -26,3 +26,4 @@ That is where the resources are from, such as the s3 website
 
 ## Questions:
 - We no have two lambda functions - what would be the best way to organize this? If there was a lambda module, would this be two separate invocations of that? If it's organized like this without modules, should they be in two separate files? It gets kind of ugly with code kind of repeating in iam.tf and lambda.tf
+- Using sqs as a data source makes it want to update my lambdas every time, because they use the URL from that data source. What is the best way to resolve this?

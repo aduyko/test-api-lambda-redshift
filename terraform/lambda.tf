@@ -12,6 +12,11 @@ resource "aws_cloudwatch_log_group" "processQueue_log_group" {
   retention_in_days = 14
 }
 
+resource "aws_cloudwatch_log_group" "redshiftCopy_log_group" {
+  name              = "/aws/lambda/${var.tag_app_name}-redshiftCopy"
+  retention_in_days = 14
+}
+
 ##########
 # Lambda
 ##########
@@ -47,6 +52,14 @@ resource "aws_lambda_permission" "apigw" {
   depends_on = [aws_lambda_function.requestUnicorn]
 }
 
+resource "aws_lambda_permission" "sns" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.redshiftCopy.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.topic.arn
+}
+
 resource "aws_lambda_function" "processQueue" {
   filename      = var.lambda_filename_processQueue
   function_name = "${var.tag_app_name}-processQueue"
@@ -60,6 +73,7 @@ resource "aws_lambda_function" "processQueue" {
       "SQS_QUEUE_URL"  = data.aws_sqs_queue.queue.url,
       "SQS_BATCH_SIZE" = 10,
       "S3_BUCKET"      = "${var.tag_app_name}-redshift",
+      "SNS_TOPIC"      = aws_sns_topic.topic.arn
     }
   }
 
@@ -69,12 +83,11 @@ resource "aws_lambda_function" "processQueue" {
   ]
 }
 
-/* will need this...
-resource "aws_lambda_function" "redshiftLoad" {
-  filename      = var.lambda_filename_redshiftLoad
-  function_name = "${var.tag_app_name}-redshiftLoad"
-  role          = aws_iam_role.lambda_redshiftLoad.arn
-  handler       = var.lambda_handler_redshiftLoad
+resource "aws_lambda_function" "redshiftCopy" {
+  filename      = var.lambda_filename_redshiftCopy
+  function_name = "${var.tag_app_name}-redshiftCopy"
+  role          = aws_iam_role.lambda_redshiftCopy.arn
+  handler       = var.lambda_handler_redshiftCopy
   runtime       = var.lambda_runtime
 
   #VPC config required to connect to redshift
@@ -87,6 +100,7 @@ resource "aws_lambda_function" "redshiftLoad" {
   environment {
     variables = {
       "S3_BUCKET" = "${var.tag_app_name}-redshift",
+      "IAM_ROLE"  = aws_iam_role.redshift_s3_read.arn
 
       "PGHOST"      = split(":", aws_redshift_cluster.cluster.endpoint)[0],
       "PGPORT"      = var.redshift_port,
@@ -98,8 +112,8 @@ resource "aws_lambda_function" "redshiftLoad" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.lambda_redshiftLoad,
-    aws_cloudwatch_log_group.redshiftLoad_log_group,
+    aws_iam_role_policy_attachment.lambda_redshiftCopy,
+    aws_iam_role_policy_attachment.lambda_redshiftCopy_vpc,
+    aws_cloudwatch_log_group.redshiftCopy_log_group,
   ]
 }
-*/
