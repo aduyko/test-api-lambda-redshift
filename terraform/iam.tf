@@ -97,6 +97,9 @@ resource "aws_iam_policy" "lambda_redshiftCopy" {
 
   policy = templatefile("${path.module}/${var.templates_path}/lambda_redshiftCopy.json.tmpl", {
     sns_topic = aws_sns_topic.topic.arn
+    redshift_arn = aws_redshift_cluster.cluster.arn
+    redshift_cluster = "${var.tag_app_name}-cluster"
+    redshift_user = var.redshift_lambda_user
   })
 }
 

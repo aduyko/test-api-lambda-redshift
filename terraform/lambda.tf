@@ -31,7 +31,7 @@ resource "aws_lambda_function" "requestUnicorn" {
   #SQS Variables
   environment {
     variables = {
-      "SQS_QUEUE_URL" = data.aws_sqs_queue.queue.url
+      "SQS_QUEUE_URL" = aws_sqs_queue.queue.id,
     }
   }
 
@@ -70,7 +70,7 @@ resource "aws_lambda_function" "processQueue" {
   #SQS connection and processing vars, Redshift connection vars
   environment {
     variables = {
-      "SQS_QUEUE_URL"  = data.aws_sqs_queue.queue.url,
+      "SQS_QUEUE_URL"  = aws_sqs_queue.queue.id,
       "SQS_BATCH_SIZE" = 10,
       "S3_BUCKET"      = "${var.tag_app_name}-redshift",
       "SNS_TOPIC"      = aws_sns_topic.topic.arn
