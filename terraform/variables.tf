@@ -96,6 +96,11 @@ variable "lambda_runtime" {
   default = "nodejs10.x"
 }
 
+variable "sqs_process_frequency" {
+  type    = string
+  default = "5"
+}
+
 variable "api_gateway_stage_name" {
   type    = string
   default = "test"

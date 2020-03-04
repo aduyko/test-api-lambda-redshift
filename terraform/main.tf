@@ -12,7 +12,7 @@ module "iam_redshift" {
 
   policy_template_variables = {
     bucket_arn = aws_s3_bucket.redshift_bucket.arn
-  } 
+  }
 
   managed_policies = {}
 }
@@ -27,7 +27,7 @@ module "iam_lambda_requestUnicorn" {
 
   policy_template_variables = {
     sqs_queue_arn = aws_sqs_queue.queue.arn
-  } 
+  }
 
   managed_policies = {}
 }
@@ -44,7 +44,7 @@ module "iam_lambda_processQueue" {
     sqs_queue_arn  = aws_sqs_queue.queue.arn
     s3_bucket_name = aws_s3_bucket.redshift_bucket.arn
     sns_topic      = aws_sns_topic.topic.arn
-  } 
+  }
 
   managed_policies = {}
 }
@@ -61,7 +61,7 @@ module "iam_lambda_redshiftCopy" {
     sns_topic = aws_sns_topic.topic.arn
     redshift_arn = aws_redshift_cluster.cluster.arn
     redshift_cluster = "${var.tag_app_name}-cluster"
-  } 
+  }
 
   managed_policies = {
     "vpc_execution_role" = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
@@ -108,6 +108,15 @@ module "lambda_processQueue" {
   }
 
   depends = [module.iam_lambda_processQueue.policy_attachments]
+
+  lambda_permissions = {
+    "cloudwatch" = {
+      statement_id = "AllowExecutionFromCloudwatch",
+      action = "lambda:InvokeFunction",
+      principal = "events.amazonaws.com",
+      source_arn = aws_cloudwatch_event_rule.trigger_lambda.arn
+    }
+  }
 }
 
 module "lambda_redshiftCopy" {
